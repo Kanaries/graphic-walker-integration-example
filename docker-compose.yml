@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      dockerfile: dockerfile_backend
+    ports:
+      - 23402:23402
+
+  frontend:
+    build:
+      dockerfile: dockerfile_frontend
+    ports:
+      - 5173:5173
+    depends_on:
+      - backend

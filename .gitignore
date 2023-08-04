@@ -72,8 +72,7 @@ web_modules/
 # Yarn Integrity file
 .yarn-integrity
 
-# dotenv environment variable files
-.env
+# local dotenv environment variable files
 .env.development.local
 .env.test.local
 .env.production.local
@@ -128,3 +127,9 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+# OS generated files
+.DS_Store
+
+# Git submodule
+/packages/graphic-walker/

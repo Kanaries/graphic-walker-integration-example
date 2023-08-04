@@ -1,0 +1,21 @@
+{
+    "name": "field-meta-editor",
+    "version": "0.0.1",
+    "description": "A web application, it is designed for the previewing and editing of the primitive field information of the imported data, generating detailed field configurations for the exploitation within @kanaries/graphic-walker.",
+    "repository": "git@github.com:k6sdevbob/field-meta-editor.git",
+    "private": true,
+    "workspaces": {
+        "packages": [
+            "packages/*"
+        ],
+        "nohoist": [
+            "**/react",
+            "**/react-dom",
+            "packages/graphic-walker/**"
+        ]
+    },
+    "author": "Kylian S. <dev.bob@kanaries.net>",
+    "scripts": {
+        "preinstall": "node ./prepare.js"
+    }
+}

@@ -1,0 +1,40 @@
+{
+    "name": "web-app",
+    "version": "0.1.0",
+    "description": "A web application, it is designed for the previewing and editing of the primitive field information of the imported data, generating detailed field configurations for the exploitation within @kanaries/graphic-walker.",
+    "author": "Kylian S. <dev.bob@kanaries.net>",
+    "main": "index.js",
+    "license": "none",
+    "scripts": {
+        "dev": "vite",
+        "build": "tsc && vite build",
+        "preview": "vite preview"
+    },
+    "dependencies": {
+        "@headlessui/react": "^1.7.15",
+        "@heroicons/react": "^2.0.18",
+        "@monaco-editor/react": "^4.5.1",
+        "immer": "^10.0.2",
+        "mobx": "^6.9.0",
+        "mobx-react-lite": "^3.4.3",
+        "monaco-editor": "^0.40.0",
+        "nanoid": "^4.0.2",
+        "react": "^18.2.0",
+        "react-aria": "^3.26.0",
+        "react-dom": "^18.2.0",
+        "react-stately": "^3.24.0",
+        "styled-components": "^5"
+    },
+    "devDependencies": {
+        "@tailwindcss/forms": "^0.5.3",
+        "@types/react": "^18.2.14",
+        "@types/react-dom": "^18.2.6",
+        "@types/react-grid-layout": "^1.3.2",
+        "@vitejs/plugin-react": "^4.0.3",
+        "autoprefixer": "^10.4.14",
+        "postcss": "^8.4.25",
+        "tailwindcss": "^3.3.2",
+        "typescript": "^5.2.0-beta",
+        "vite": "^4.4.3"
+    }
+}

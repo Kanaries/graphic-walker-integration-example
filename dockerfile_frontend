@@ -1,0 +1,26 @@
+FROM node:16 AS build
+
+RUN mkdir app
+COPY . /app
+COPY .git /app/.git
+COPY .gitmodules /app/.gitmodules
+
+WORKDIR /app
+
+RUN git submodule add --force git@github.com:Kanaries/graphic-walker.git packages/graphic-walker
+
+RUN git submodule update --init --recursive
+
+RUN yarn install
+
+ENTRYPOINT ["yarn", "workspace", "web-app", "dev"]
+
+#FROM nginx:stable-alpine3.17-slim
+#
+#COPY --from=build /app/packages/web-app/dist /usr/share/nginx/html
+#COPY nginx.conf /etc/nginx/conf.d/default.conf
+#
+#EXPOSE 5173
+#CMD ["yarn", "workspace", "web-app", "dev"]
+
+

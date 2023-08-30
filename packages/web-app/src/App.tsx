@@ -18,7 +18,7 @@ const App = () => {
                         <div className="w-full p-8 bg-white shadow-md rounded-md space-y-4">
                             <DatasetHandle />
                         </div>
-                        <FieldEditor />
+                        {/*<FieldEditor />*/}
                         <Playground />
                     </main>
                 </div>

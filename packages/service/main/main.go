@@ -12,7 +12,7 @@ import (
 )
 
 type api struct {
-	db *sql.DB
+	DB *sql.DB
 }
 
 type SuccessResponse struct {
@@ -26,18 +26,10 @@ type ErrorResponse struct {
 }
 
 func main() {
-	// Create a mock database connection
-	db, err := sql.Open("sqlite3", ":memory:")
-	if err != nil {
-		log.Fatalf("Failed to create mock database: %v", err)
-	}
-	defer db.Close()
-
 	// Create api and init database with filling example data
-	app := &api{
-		db: db,
-	}
-	if err = app.InitDB(); err != nil {
+	app := &api{}
+
+	if err := app.InitDB(); err != nil {
 		log.Fatalf("%v", err)
 	}
 
@@ -69,14 +61,17 @@ func corsMiddleware(next http.Handler) http.Handler {
 
 func (a *api) QueryMetaHandler(w http.ResponseWriter, r *http.Request) {
 	id := r.URL.Query().Get("datasetId")
+
+	//Query CubeJS Meta
 	meta, err := a.QueryMeta(id)
 	if err != nil {
 		println(err)
 		return
 	}
+
 	resp := SuccessResponse{Success: true, Data: map[string]interface{}{
 		"fieldsMeta": meta,
-		"name":       "test",
+		"name":       id,
 		"datasetId":  id,
 	}}
 	_ = json.NewEncoder(w).Encode(resp)
@@ -91,25 +86,8 @@ func (a *api) UpdateMetaHandler(w http.ResponseWriter, r *http.Request) {
 	strBody, _ := ioutil.ReadAll(r.Body)
 	_ = json.Unmarshal(strBody, &ur)
 
-	err := a.UpdateMeta(ur.DatasetID, ur.Meta)
-	if err != nil {
-		println(err)
-		return
-	}
-
-	// fmt.Fprint(w, "Meta updated successfully")
-
-	meta, err := a.QueryMeta(ur.DatasetID)
-	if err != nil {
-		//http.Error(w, err.Error(), http.StatusInternalServerError)
-		resp := ErrorResponse{Success: false, Message: err.Error()}
-		json.NewEncoder(w).Encode(resp)
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-
 	resp := SuccessResponse{Success: true, Data: map[string]interface{}{
-		"fieldsMeta": meta,
+		"fieldsMeta": ur.Meta,
 	}}
 	json.NewEncoder(w).Encode(resp)
 }
@@ -124,19 +102,20 @@ func (a *api) QueryDatesetHandler(w http.ResponseWriter, r *http.Request) {
 	strBody, _ := ioutil.ReadAll(r.Body)
 	_ = json.Unmarshal(strBody, &ur)
 
-	// get dataset info
-	queryDataset, _ := a.QueryDataset(ur.DatasetID)
-
 	// parser sql
 	baseParser := parser.BaseParser{}
 	dataset := parser.Dataset{
-		Source: queryDataset.Name,
+		Source: ur.DatasetID,
 		Type:   "table",
 	}
 	sql, _ := baseParser.Parse(dataset, ur.Payload)
-
+	log.Printf(sql)
 	// user sql to query datasource
-	res, _ := a.QueryDatasource(sql)
+	res, err := a.QueryDatasource(sql)
+	if err != nil {
+		println(err)
+		return
+	}
 
 	// return result
 	resp := SuccessResponse{Success: true, Data: res}

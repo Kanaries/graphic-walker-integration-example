@@ -6,6 +6,8 @@ services:
       dockerfile: dockerfile_backend
     ports:
       - 23402:23402
+    env_file:
+      - ./envs.env
 
   frontend:
     build:

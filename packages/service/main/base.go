@@ -14,34 +14,61 @@ type Dataset struct {
 type Meta struct {
 	Fid          string `json:"fid"`
 	Name         string `json:"name"`
+	DataType     string `json:"dataType"`
 	SemanticType string `json:"semanticType"`
 }
 
 // QueryMeta
-func (a *api) QueryMeta(datasetIdStr string) ([]Meta, error) {
-	datasetId, _ := strconv.Atoi(datasetIdStr)
+func (a *api) QueryMeta(datasetId string) ([]Meta, error) {
 	// Prepare & Execute SQL statement
-	stmt, _ := a.db.Prepare("SELECT Fid, Name, SemanticType FROM meta WHERE DatasetID = ?")
+	stmt, err := a.DB.Prepare("SELECT column_name, data_type FROM information_schema.columns WHERE table_name = $1")
+	if err != nil {
+		return nil, fmt.Errorf("unable to prepare statement: %v", err)
+	}
 	defer stmt.Close()
-	rows, _ := stmt.Query(datasetId)
+	rows, err := stmt.Query(datasetId)
+	if err != nil {
+		return nil, fmt.Errorf("unable to execute query: %v", err)
+	}
 	defer rows.Close()
 
 	// Iterate over the rows and append to the slice
 	var metas []Meta
 	for rows.Next() {
 		var meta Meta
-		_ = rows.Scan(&meta.Fid, &meta.Name, &meta.SemanticType)
+		_ = rows.Scan(&meta.Fid, &meta.DataType)
+		meta.Name = meta.Fid
+		meta.SemanticType = ConvertDataTypeToSemanticType(meta.DataType)
 		metas = append(metas, meta)
 	}
 
 	return metas, nil
 }
 
+func ConvertDataTypeToSemanticType(dataType string) string {
+	switch dataType {
+	case "text":
+		return "nominal"
+	case "integer":
+		return "quantitative"
+	case "numeric":
+		return "quantitative"
+	case "boolean":
+		return "nominal"
+	case "date":
+		return "temporal"
+	case "timestamp":
+		return "temporal"
+	default:
+		return "nominal"
+	}
+}
+
 // UpdateMeta
 func (a *api) UpdateMeta(datasetIdStr string, metas []Meta) error {
 	datasetId, _ := strconv.Atoi(datasetIdStr)
 	// Prepare SQL statement
-	stmt, err := a.db.Prepare("UPDATE meta SET Name = ?, SemanticType = ? WHERE Fid = ? AND DatasetID = ?")
+	stmt, err := a.DB.Prepare("UPDATE meta SET Name = ?, SemanticType = ? WHERE Fid = ? AND DatasetID = ?")
 	if err != nil {
 		return fmt.Errorf("unable to prepare statement: %v", err)
 	}
@@ -70,13 +97,13 @@ func (a *api) QueryDataset(datasetIdStr string) (Dataset, error) {
 	datasetId, _ := strconv.Atoi(datasetIdStr)
 	// Query the Dataset
 	var dataset Dataset
-	err := a.db.QueryRow("SELECT DatasetId, Name FROM dataset WHERE DatasetId = ?", datasetId).Scan(&dataset.DatasetId, &dataset.Name)
+	err := a.DB.QueryRow("SELECT DatasetId, Name FROM dataset WHERE DatasetId = ?", datasetId).Scan(&dataset.DatasetId, &dataset.Name)
 	if err != nil {
 		return Dataset{}, fmt.Errorf("unable to execute query on datasets table: %v", err)
 	}
 
 	// Query the Metas associated with the Dataset
-	rows, err := a.db.Query("SELECT Fid, Name, SemanticType FROM meta WHERE DatasetID = ?", datasetId)
+	rows, err := a.DB.Query("SELECT Fid, Name, SemanticType FROM meta WHERE DatasetID = ?", datasetId)
 	if err != nil {
 		return Dataset{}, fmt.Errorf("unable to execute query on meta table: %v", err)
 	}
@@ -102,7 +129,7 @@ func (a *api) QueryDataset(datasetIdStr string) (Dataset, error) {
 
 // QueryDatasource
 func (a *api) QueryDatasource(sql string) ([]map[string]interface{}, error) {
-	rows, err := a.db.Query(sql)
+	rows, err := a.DB.Query(sql)
 	if err != nil {
 		return nil, err
 	}

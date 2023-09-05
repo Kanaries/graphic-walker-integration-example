@@ -3,6 +3,7 @@ module demo
 go 1.20
 
 require (
+	github.com/go-sql-driver/mysql v1.7.1
 	github.com/gorilla/mux v1.8.0
 	github.com/mattn/go-sqlite3 v1.14.17
 )
@@ -21,7 +22,7 @@ require (
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/protobuf v1.5.0 // indirect
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0 // indirect
-	github.com/kanaries/gw-dsl-parser v0.0.0-20230804113740-113e59fe5145
+	github.com/kanaries/gw-dsl-parser v0.0.0-20230808023559-c38f2d3a9d85
 	github.com/konsorten/go-windows-terminal-sequences v1.0.3 // indirect
 	github.com/kr/pretty v0.2.0 // indirect
 	github.com/kr/text v0.2.0 // indirect

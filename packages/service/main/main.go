@@ -65,7 +65,7 @@ func (a *api) QueryMetaHandler(w http.ResponseWriter, r *http.Request) {
 	//Query CubeJS Meta
 	meta, err := a.QueryMeta(id)
 	if err != nil {
-		println(err)
+		println(err.Error())
 		return
 	}
 
@@ -106,7 +106,7 @@ func (a *api) QueryDatesetHandler(w http.ResponseWriter, r *http.Request) {
 	baseParser := parser.BaseParser{}
 	dataset := parser.Dataset{
 		Source: ur.DatasetID,
-		Type:   "table",
+		Type:   "sub_query",
 	}
 	sql, _ := baseParser.Parse(dataset, ur.Payload)
 	log.Printf(sql)

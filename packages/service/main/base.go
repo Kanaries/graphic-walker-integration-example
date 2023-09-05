@@ -21,12 +21,12 @@ type Meta struct {
 // QueryMeta
 func (a *api) QueryMeta(datasetId string) ([]Meta, error) {
 	// Prepare & Execute SQL statement
-	stmt, err := a.DB.Prepare("SELECT column_name, data_type FROM information_schema.columns WHERE table_name = $1")
+	stmt, err := a.DB.Prepare(fmt.Sprintf("SELECT * FROM (%s) as temp limit 1", datasetId))
 	if err != nil {
 		return nil, fmt.Errorf("unable to prepare statement: %v", err)
 	}
 	defer stmt.Close()
-	rows, err := stmt.Query(datasetId)
+	rows, err := stmt.Query()
 	if err != nil {
 		return nil, fmt.Errorf("unable to execute query: %v", err)
 	}
@@ -35,11 +35,22 @@ func (a *api) QueryMeta(datasetId string) ([]Meta, error) {
 	// Iterate over the rows and append to the slice
 	var metas []Meta
 	for rows.Next() {
-		var meta Meta
-		_ = rows.Scan(&meta.Fid, &meta.DataType)
-		meta.Name = meta.Fid
-		meta.SemanticType = ConvertDataTypeToSemanticType(meta.DataType)
-		metas = append(metas, meta)
+		names, err := rows.Columns()
+		if err != nil {
+			return nil, fmt.Errorf("unable to get columns: %v", err)
+		}
+		types, err := rows.ColumnTypes()
+		if err != nil {
+			return nil, fmt.Errorf("unable to get column types: %v", err)
+		}
+		for i, t := range types {
+			fmt.Printf("%s %s\n", names[i], t.DatabaseTypeName())
+			var meta Meta
+			meta.Name = names[i]
+			meta.Fid = names[i]
+			meta.SemanticType = ConvertDataTypeToSemanticType(t.DatabaseTypeName())
+			metas = append(metas, meta)
+		}
 	}
 
 	return metas, nil

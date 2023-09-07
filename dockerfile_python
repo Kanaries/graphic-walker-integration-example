@@ -1,0 +1,21 @@
+FROM golang:1.20.4 AS build-so
+
+WORKDIR /src
+
+COPY packages/service_python/scripts ./scripts
+
+RUN ./scripts/gen_dsl_parser_go.sh
+
+FROM python:3.11.3
+
+COPY packages/service_python/requirements.txt /requirements.txt
+
+RUN set -xe && \
+    pip install --no-cache-dir -r /requirements.txt && \
+    rm -f /requirements.txt
+
+WORKDIR /src
+COPY packages/service_python/app ./app
+COPY --from=build-so /src/dsl_to_sql.so /src/dsl_to_sql.so
+
+ENTRYPOINT ["uvicorn", "app.apis:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "4"]

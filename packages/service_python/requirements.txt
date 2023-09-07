@@ -1,0 +1,7 @@
+psycopg-pool==3.1.7
+psycopg-binary==3.1.9
+psycopg==3.1.9
+SQLAlchemy==2.0.16
+uvicorn==0.22.0
+fastapi==0.97.0
+pydantic==1.10.9

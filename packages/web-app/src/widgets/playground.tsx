@@ -34,6 +34,15 @@ const Playground = observer(function Playground() {
         return null;
     }
 
+    const geoList = [
+        { name: 'World Countries', type: 'TopoJSON', url: 'https://cdn.jsdelivr.net/npm/world-atlas@2/countries-10m.json' },
+        {
+            name: 'World Cities',
+            type: 'GeoJSON',
+            url: 'https://raw.githubusercontent.com/drei01/geojson-world-cities/f2a988af4bc15463df55586afbbffbd3068b7218/cities.geojson',
+        },
+    ];
+
     return (
         <div className="w-full p-8 bg-white shadow-md rounded-md space-y-4">
             <div className="flex space-x-2 items-stretch">
@@ -44,6 +53,7 @@ const Playground = observer(function Playground() {
                     dataSource={fakeDataSource}
                     rawFields={fields}
                     fieldKeyGuard={false}
+                    geoList={geoList}
                 />
             </div>
         </div>

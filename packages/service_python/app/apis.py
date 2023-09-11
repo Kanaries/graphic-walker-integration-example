@@ -62,5 +62,6 @@ def dsl_query_get(
     req: QueryDataRequest,
 ):
     return {
+        "success": True,
         "data": get_datas_from_payload(req.dataset_id, req.payload)
     }

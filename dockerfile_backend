@@ -1,0 +1,11 @@
+FROM maven:3-jdk-8
+
+RUN mkdir app
+COPY packages/service/java/. app
+COPY resource/kanaries-dsl-parser-1.0-SNAPSHOT.jar app
+
+WORKDIR app
+
+RUN  mvn install:install-file -Dfile=kanaries-dsl-parser-1.0-SNAPSHOT.jar -DgroupId=net.kanaries.dsl -DartifactId=kanaries-dsl-parser -Dversion=1.0-SNAPSHOT -Dpackaging=jar
+RUN  mvn clean package
+ENTRYPOINT ["java", "-jar", "target/gw-demo-0.0.1-SNAPSHOT.jar"]

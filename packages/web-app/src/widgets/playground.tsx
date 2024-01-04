@@ -38,12 +38,9 @@ const Playground = observer(function Playground() {
         <div className="w-full p-8 bg-white shadow-md rounded-md space-y-4">
             <div className="flex space-x-2 items-stretch">
                 <GraphicWalker
-                    hideDataSourceConfig
                     computation={service}
                     dark="light"
-                    dataSource={fakeDataSource}
                     rawFields={fields}
-                    fieldKeyGuard={false}
                 />
             </div>
         </div>

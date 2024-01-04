@@ -26,7 +26,7 @@ public class SemanticTypeMapper {
     }
 
     public static String mapDataType(String databaseType) {
-        return semanticTypeMap.getOrDefault(databaseType, "unknown");
+        return semanticTypeMap.getOrDefault(databaseType, "nominal");
     }
 
 }
